@@ -8,6 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
+@CrossOrigin(origins = "http://localhost")
 public class PostController {
 
     @GetMapping
