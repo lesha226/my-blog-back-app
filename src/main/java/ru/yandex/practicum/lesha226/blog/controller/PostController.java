@@ -7,7 +7,7 @@ import ru.yandex.practicum.lesha226.blog.model.PostsPage;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/posts")
 public class PostController {
 
     @GetMapping

@@ -62,7 +62,7 @@
   </dependencies>
 
   <build>
-    <finalName>my-blog-back-app</finalName>
+    <finalName>api</finalName>
     <pluginManagement>
       <plugins>
         <plugin>
