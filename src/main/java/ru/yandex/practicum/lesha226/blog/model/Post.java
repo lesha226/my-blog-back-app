@@ -11,6 +11,9 @@ public class Post {
     private int likesCount;
     private int commentsCount;
 
+    public Post() {
+    }
+
     public Post(Long id, String title, String text, List<String> tags, int likesCount, int commentsCount) {
         this.id = id;
         this.title = title;
