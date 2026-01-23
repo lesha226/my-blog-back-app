@@ -1,16 +1,18 @@
 package ru.yandex.practicum.lesha226.blog.model;
 
+import java.util.Objects;
+
 public class Comment {
     private Long id;
-    private String text;
     private Long postId;
+    private String text;
 
     public Comment() {}
 
-    public Comment(Long id, String text, Long postId) {
+    public Comment(Long id, Long postId, String text) {
         this.id = id;
-        this.text = text;
         this.postId = postId;
+        this.text = text;
     }
 
     public Long getId() {
@@ -35,5 +37,17 @@ public class Comment {
 
     public void setPostId(Long postId) {
         this.postId = postId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Comment comment = (Comment) o;
+        return Objects.equals(postId, comment.postId) && Objects.equals(text, comment.text);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(postId, text);
     }
 }

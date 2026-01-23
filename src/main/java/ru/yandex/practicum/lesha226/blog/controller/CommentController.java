@@ -11,7 +11,7 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost")
 public class CommentController {
     // TODO : delete tempComment
-    private final Comment tempComment = new Comment(100L, "Some comment.", 1L);
+    private final Comment tempComment = new Comment(100L, 1L, "Some comment.");
 
     // TODO : fix front GET http://localhost:8080/api/posts/undefined/comments
     @GetMapping("/undefined/comments")
