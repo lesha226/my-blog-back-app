@@ -1,6 +1,7 @@
 package ru.yandex.practicum.lesha226.blog.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class Post {
 
@@ -69,5 +70,29 @@ public class Post {
 
     public void setCommentsCount(int commentsCount) {
         this.commentsCount = commentsCount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        Post post = (Post) o;
+        return likesCount == post.likesCount && commentsCount == post.commentsCount && Objects.equals(title, post.title) && Objects.equals(text, post.text) && Objects.equals(tags, post.tags);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(title, text, tags, likesCount, commentsCount);
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", text='" + text + '\'' +
+                ", tags=" + tags +
+                ", likesCount=" + likesCount +
+                ", commentsCount=" + commentsCount +
+                '}';
     }
 }
