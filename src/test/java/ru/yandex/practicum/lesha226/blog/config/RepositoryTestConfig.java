@@ -10,6 +10,6 @@ import ru.yandex.practicum.lesha226.blog.configuration.DataSourceConfig;
 @Import({DataSourceConfig.class})
 @PropertySource("classpath:application.properties")
 @ComponentScan("ru.yandex.practicum.lesha226.blog.repository")
-public class TestConfig {
+public class RepositoryTestConfig {
 }
 

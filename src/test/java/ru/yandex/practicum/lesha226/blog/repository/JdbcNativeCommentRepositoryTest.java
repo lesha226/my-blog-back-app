@@ -2,18 +2,15 @@ package ru.yandex.practicum.lesha226.blog.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.yandex.practicum.lesha226.blog.config.TestConfig;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import ru.yandex.practicum.lesha226.blog.config.RepositoryTestConfig;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = TestConfig.class)
+@SpringJUnitConfig(classes = RepositoryTestConfig.class)
 class JdbcNativeCommentRepositoryTest {
 
     @Autowired

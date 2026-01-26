@@ -1,4 +1,4 @@
-package ru.yandex.practicum.lesha226.blog.repository;
+package ru.yandex.practicum.lesha226.blog.repository.jdbcnative;
 
 
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -8,6 +8,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
+import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
