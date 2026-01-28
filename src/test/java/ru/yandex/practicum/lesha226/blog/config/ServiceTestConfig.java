@@ -6,6 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
+import ru.yandex.practicum.lesha226.blog.repository.ImageRepository;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
 
 @Configuration
@@ -22,5 +23,11 @@ public class ServiceTestConfig {
     @Primary
     public PostRepository mockPostRepository() {
         return Mockito.mock(PostRepository.class);
+    }
+
+    @Bean
+    @Primary
+    public ImageRepository mockImageRepository() {
+        return Mockito.mock(ImageRepository.class);
     }
 }
