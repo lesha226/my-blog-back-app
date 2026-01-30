@@ -1,4 +1,4 @@
-package ru.yandex.practicum.lesha226.blog.repository.jdbcnative;
+package ru.yandex.practicum.lesha226.blog.repository.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

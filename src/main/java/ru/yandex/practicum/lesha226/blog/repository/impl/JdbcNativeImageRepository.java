@@ -1,4 +1,4 @@
-package ru.yandex.practicum.lesha226.blog.repository.jdbcnative;
+package ru.yandex.practicum.lesha226.blog.repository.impl;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.lesha226.blog.model.Image;
 import ru.yandex.practicum.lesha226.blog.repository.ImageRepository;
 
-import javax.swing.text.html.Option;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Optional;

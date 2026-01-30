@@ -1,4 +1,4 @@
-package ru.yandex.practicum.lesha226.blog.repository.jdbcnative;
+package ru.yandex.practicum.lesha226.blog.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.RepositoryTestConfig;
 import ru.yandex.practicum.lesha226.blog.model.Image;
-import ru.yandex.practicum.lesha226.blog.repository.ImageRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
