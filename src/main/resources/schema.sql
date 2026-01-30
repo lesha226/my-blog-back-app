@@ -2,6 +2,7 @@ create table if not exists posts(
     id          bigserial primary key,
     title       varchar(256)    not null,
     text        varchar(256)    not null,
+    tags        varchar array   not null default array[],
     likes_count integer         not null default 0
 );
 
@@ -16,12 +17,14 @@ create table if not exists images(
     body        blob            not null
 );
 
+insert into posts(title, text, tags, likes_count)
+values
+    ('Title #1', 'Some post text 1.', ARRAY['tag1'], 0),
+    ('Title #2', 'Some post text 2.', ARRAY['tag2'], 20),
+    ('Title #3', 'Some post text 3.', ARRAY['tag1', 'tag2'], 30);
 
 insert into posts(title, text, likes_count)
 values
-    ('Title #1', 'Some post text 1.', 0),
-    ('Title #2', 'Some post text 2.', 20),
-    ('Title #3', 'Some post text 3.', 30),
     ('Title #4', 'Some post text 4.', 40),
     ('Title #5', 'Some post text 5.', 50),
     ('Title #6', 'Some post text 6.', 60),
@@ -32,7 +35,7 @@ values
     ('Title #11', 'Some post text 11.', 10),
     ('Title #12', 'Some post text 12.', 20),
     ('Title #13', 'Some post text 13.', 30),
-    ('Title #14', 'Some post text 14,', 40),
+    ('Title #14', 'Some post text 14.', 40),
     ('Title #15', 'Some post text 15.', 50);
 
 insert into comments(post_id, text)

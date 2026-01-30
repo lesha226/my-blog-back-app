@@ -31,8 +31,8 @@ class JdbcNativePostRepositoryTest {
 
     @Test
     void testFindAll() {
-        Post temp1Post = new Post(null, "Title", "Some text", List.of(), 0, 0);
-        Post temp2Post = new Post(null, "Title", "Some text", List.of(), 0, 0);
+        Post temp1Post = new Post(null, "Title 1", "Some text 1", List.of("tag1"), 0, 0);
+        Post temp2Post = new Post(null, "Title 2", "Some text 2", List.of("tag2"), 0, 0);
         List<Post> result;
 
         result = repository.findAll(0, 5);
@@ -53,7 +53,7 @@ class JdbcNativePostRepositoryTest {
 
     @Test
     void testCrud() {
-        Post tempPost = new Post(null, "Title", "Some text", List.of(), 0, 0);
+        Post tempPost = new Post(null, "Title", "Some text", List.of("tag1"), 0, 0);
         Long id;
         Post result;
 
@@ -66,7 +66,7 @@ class JdbcNativePostRepositoryTest {
         tempPost.setId(id);
         tempPost.setTitle(tempPost.getTitle() + "(updated)");
         tempPost.setText(tempPost.getText() + "(updated)");
-        tempPost.setTags(List.of()); // TODO : save tags
+        tempPost.setTags(List.of("tag2"));
         repository.update(tempPost);
         result = repository.findById(id).orElse(null);
         assertEquals(tempPost, result);

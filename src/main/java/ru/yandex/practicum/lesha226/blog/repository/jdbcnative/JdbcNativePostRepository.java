@@ -12,6 +12,7 @@ import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class JdbcNativePostRepository implements PostRepository {
             rs.getLong("id"),
             rs.getString("title"),
             rs.getString("text"),
-            List.of(), // TODO : get tags
+            Arrays.stream(((Object[]) rs.getArray("tags").getArray())).map(Object::toString).toList(),
             rs.getInt("likes_count"),
             rs.getInt("comments_count")
     );
@@ -37,7 +38,7 @@ public class JdbcNativePostRepository implements PostRepository {
     @Override
     public List<Post> findAll(int offset, int size) {
         return template.query("""
-                select id, title, text, likes_count
+                select id, title, text, tags, likes_count
                      , (select count(*) from comments where post_id = p.id) as comments_count
                 from posts p
                 order by id
@@ -48,7 +49,7 @@ public class JdbcNativePostRepository implements PostRepository {
     public Optional<Post> findById(Long id) {
         try {
             Post post = template.queryForObject("""
-                    select id, title, text, likes_count
+                    select id, title, text, tags, likes_count
                         , (select count(*) from comments where post_id = p.id) as comments_count
                     from posts p
                     where id = ?""", mapper, id);
@@ -73,15 +74,17 @@ public class JdbcNativePostRepository implements PostRepository {
 
     @Override
     public Long save(Post post) {
-        String sql = "insert into posts(title, text) values (?, ?)";
-
         KeyHolder holder = new GeneratedKeyHolder();
 
         template.update(
                 con -> {
-                    PreparedStatement ps = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+                    PreparedStatement ps = con.prepareStatement("""
+                            insert into posts(title, text, tags)
+                            values (?, ?, ?)
+                            """, Statement.RETURN_GENERATED_KEYS);
                     ps.setString(1, post.getTitle());
                     ps.setString(2, post.getText());
+                    ps.setArray(3, con.createArrayOf("varchar", post.getTags().toArray()));
                     return ps;
                 },
                 holder);
@@ -91,11 +94,20 @@ public class JdbcNativePostRepository implements PostRepository {
 
     @Override
     public void update(Post post) {
-        template.update("""
-                update posts
-                set title = ?,
-                    text = ?
-                where id = ?""", post.getTitle(), post.getText(), post.getId());
+        template.update(
+                con -> {
+                    PreparedStatement ps = con.prepareStatement("""
+                            update posts
+                            set title = ?,
+                                text = ?,
+                                tags = ?
+                            where id = ?""");
+                    ps.setString(1, post.getTitle());
+                    ps.setString(2, post.getText());
+                    ps.setArray(3, con.createArrayOf("varchar", post.getTags().toArray()));
+                    ps.setLong(4, post.getId());
+                    return ps;
+                });
     }
 
     @Override
