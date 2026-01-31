@@ -1,6 +1,7 @@
 package ru.yandex.practicum.lesha226.blog.model;
 
 import java.util.List;
+import java.util.Objects;
 
 public class PostsPage {
 
@@ -46,5 +47,27 @@ public class PostsPage {
 
     public void setLastPage(int lastPage) {
         this.lastPage = lastPage;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        PostsPage postsPage = (PostsPage) o;
+        return hasPrev == postsPage.hasPrev && hasNext == postsPage.hasNext && lastPage == postsPage.lastPage && Objects.equals(posts, postsPage.posts);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(posts, hasPrev, hasNext, lastPage);
+    }
+
+    @Override
+    public String toString() {
+        return "PostsPage{" +
+                "posts=" + posts +
+                ", hasPrev=" + hasPrev +
+                ", hasNext=" + hasNext +
+                ", lastPage=" + lastPage +
+                '}';
     }
 }

@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository {
-    List<Post> findAll(int offset, int size);
+    List<Post> findAll(String searchTitleString, List<String> searchTagList, int offset, int size);
 
     Optional<Post>  findById(Long id);
 
-    int size();
+    int size(String searchTitleString, List<String> searchTagList);
 
     Long save(Post post);
 

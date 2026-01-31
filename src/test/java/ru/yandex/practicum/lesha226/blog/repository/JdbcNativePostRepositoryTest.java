@@ -33,21 +33,29 @@ class JdbcNativePostRepositoryTest {
     void testFindAll() {
         Post temp1Post = new Post(null, "Title 1", "Some text 1", List.of("tag1"), 0, 0);
         Post temp2Post = new Post(null, "Title 2", "Some text 2", List.of("tag2"), 0, 0);
+        String searchTitleString = "";
+        List<String> searchTagList = List.of();
         List<Post> result;
 
-        result = repository.findAll(0, 5);
+        result = repository.findAll(searchTitleString, searchTagList, 0, 5);
         assertEquals(List.of(), result);
 
         repository.save(temp1Post);
         repository.save(temp2Post);
 
-        result = repository.findAll(0, 5);
+        result = repository.findAll(searchTitleString, searchTagList, 0, 5);
         assertEquals(List.of(temp1Post, temp2Post), result);
 
-        result = repository.findAll(0, 1);
+        result = repository.findAll(searchTitleString, searchTagList, 0, 1);
         assertEquals(List.of(temp1Post), result);
 
-        result = repository.findAll(1, 5);
+        result = repository.findAll(searchTitleString, searchTagList, 1, 5);
+        assertEquals(List.of(temp2Post), result);
+
+        result = repository.findAll("tle 2", searchTagList, 0, 5);
+        assertEquals(List.of(temp2Post), result);
+
+        result = repository.findAll(searchTitleString, temp2Post.getTags(), 0, 5);
         assertEquals(List.of(temp2Post), result);
     }
 
@@ -79,18 +87,29 @@ class JdbcNativePostRepositoryTest {
 
     @Test
     void testSize() {
-        Post temp1Post = new Post(null, "Title", "Some text", List.of(), 0, 0);
-        Post temp2Post = new Post(null, "Title", "Some text", List.of(), 0, 0);
+        Post temp1Post = new Post(null, "Title 1", "Some text 1", List.of("tag1"), 0, 0);
+        Post temp2Post = new Post(null, "Title 2", "Some text 2", List.of("tag2"), 0, 0);
+        String searchTitleString = "";
+        List<String> searchTagList = List.of();
         int result;
 
-        result = repository.size();
+        result = repository.size(searchTitleString, searchTagList);
         assertEquals(0, result);
 
         repository.save(temp1Post);
         repository.save(temp2Post);
 
-        result = repository.size();
+        result = repository.size(searchTitleString, searchTagList);
         assertEquals(2, result);
+
+        result = repository.size("tle", searchTagList);
+        assertEquals(2, result);
+
+        result = repository.size("tle 1", searchTagList);
+        assertEquals(1, result);
+
+        result = repository.size(searchTitleString, List.of("tag1"));
+        assertEquals(1, result);
     }
 
     @Test

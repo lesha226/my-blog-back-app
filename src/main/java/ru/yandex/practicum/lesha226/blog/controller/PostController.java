@@ -24,16 +24,7 @@ public class PostController {
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "1") int pageSize
     ) {
-        int offset = (pageNumber - 1) * pageSize;
-
-        List<Post> postList = service.findAll(search, offset, pageSize);
-        int size = service.size(search);
-
-        int lastPage = (size - 1) / pageSize + 1;
-        boolean hasPrev = pageNumber > 1;
-        boolean hasNext = pageNumber < lastPage;
-
-        return new PostsPage(postList, hasPrev, hasNext, lastPage);
+        return service.getPostPage(search, pageNumber, pageSize);
     }
 
     @GetMapping("/{id}")

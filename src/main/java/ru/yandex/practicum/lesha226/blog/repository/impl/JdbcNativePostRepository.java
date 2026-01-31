@@ -3,6 +3,7 @@ package ru.yandex.practicum.lesha226.blog.repository.impl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
@@ -36,13 +37,18 @@ public class JdbcNativePostRepository implements PostRepository {
 
 
     @Override
-    public List<Post> findAll(int offset, int size) {
+    public List<Post> findAll(String searchTitleString, List<String> searchTagList, int offset, int size) {
+
         return template.query("""
                 select id, title, text, tags, likes_count
                      , (select count(*) from comments where post_id = p.id) as comments_count
                 from posts p
+                where title like concat('%', ?, '%')
+                  and not exists(select 1
+                                 from unnest(?) as search_tags(tag)
+                                 where not array_contains(p.tags, search_tags.tag))
                 order by id
-                limit ? offset ?""", mapper, size, offset);
+                limit ? offset ?""", mapper, searchTitleString, searchTagList.toArray(), size, offset);
     }
 
     @Override
@@ -61,15 +67,16 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public int size() {
-        SqlRowSet rs = template.queryForRowSet("""
-                select count(*) from posts""");
-
-        if (rs.first()) {
-            return rs.getInt(1);
-        } else {
-            return 0;
-        }
+    public int size(String searchTitleString, List<String> searchTagList) {
+        Integer result = template.queryForObject("""
+                select count(*)
+                from posts p
+                where title like concat('%', ?, '%')
+                  and not exists(select 1
+                                 from unnest(?) as search_tags(tag)
+                                 where not array_contains(p.tags, search_tags.tag))
+                """, Integer.class, searchTitleString, searchTagList.toArray());
+        return result == null ? 0 : result;
     }
 
     @Override
