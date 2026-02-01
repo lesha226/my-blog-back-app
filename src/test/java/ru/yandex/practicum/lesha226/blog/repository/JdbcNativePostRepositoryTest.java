@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.RepositoryTestConfig;
+import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 
 import java.util.List;
@@ -19,6 +20,9 @@ class JdbcNativePostRepositoryTest {
 
     @Autowired
     private PostRepository repository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private JdbcTemplate template;
@@ -125,5 +129,21 @@ class JdbcNativePostRepositoryTest {
         tempPost.setLikesCount(tempPost.getLikesCount() + 1);
         result = repository.findById(id).orElse(null);
         assertEquals(tempPost, result);
+    }
+
+    @Test
+    void testCommentsCount() {
+        Post post = new Post(null, "Title", "Some text.", List.of(), 0, 0);
+        Long id;
+        Post result;
+
+        id = repository.save(post);
+        result = repository.findById(id).orElse(null);
+        assertEquals(post, result);
+
+        commentRepository.save(new Comment(null, id, "Some comment text."));
+        post.setCommentsCount(1);
+        result = repository.findById(id).orElse(null);
+        assertEquals(post, result);
     }
 }
