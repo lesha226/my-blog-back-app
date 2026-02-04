@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.RepositoryTestConfig;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
@@ -15,6 +16,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringJUnitConfig(classes = RepositoryTestConfig.class)
+@TestPropertySource(locations = "classpath:test-application.properties")
 class JdbcNativeCommentRepositoryTest {
 
     @Autowired

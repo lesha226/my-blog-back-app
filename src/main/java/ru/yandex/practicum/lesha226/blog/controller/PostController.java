@@ -1,5 +1,6 @@
 package ru.yandex.practicum.lesha226.blog.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.model.PostsPage;
@@ -33,6 +34,7 @@ public class PostController {
     }
 
     @PostMapping
+    @ResponseStatus(code = HttpStatus.CREATED)
     public Post save(@RequestBody Post post) {
         return service.save(post).orElse(null);
     }
@@ -43,6 +45,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
     public void delete(@PathVariable(name = "id") Long id) {
         service.delete(id);
     }

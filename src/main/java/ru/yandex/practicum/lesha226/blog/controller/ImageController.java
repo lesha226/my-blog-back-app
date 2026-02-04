@@ -1,5 +1,6 @@
 package ru.yandex.practicum.lesha226.blog.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,6 +32,7 @@ public class ImageController {
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(code = HttpStatus.CREATED)
     public void updateImage(@PathVariable("postId") Long postId, @RequestParam("image") MultipartFile file) {
         if (!file.isEmpty()) {
             byte[] body;

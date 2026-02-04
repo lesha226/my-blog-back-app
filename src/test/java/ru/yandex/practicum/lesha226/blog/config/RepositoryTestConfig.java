@@ -8,7 +8,7 @@ import ru.yandex.practicum.lesha226.blog.configuration.DataSourceConfig;
 
 @Configuration
 @Import({DataSourceConfig.class})
-@PropertySource("classpath:application.properties")
+@PropertySource("classpath:test-application.properties")
 @ComponentScan("ru.yandex.practicum.lesha226.blog.repository")
 public class RepositoryTestConfig {
 }
