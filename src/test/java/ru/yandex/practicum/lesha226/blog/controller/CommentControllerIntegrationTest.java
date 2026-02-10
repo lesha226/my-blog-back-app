@@ -32,6 +32,7 @@ public class CommentControllerIntegrationTest {
     private MockMvc mockMvc;
     private Long postId;
     private Long commentId;
+    private final Long notExistId = -1L;
 
     @BeforeEach
     void setUp() {
@@ -79,6 +80,12 @@ public class CommentControllerIntegrationTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.postId").value(postId))
                 .andExpect(jsonPath("$.text").value("Some comment 1."));
+    }
+
+    @Test
+    void testGetCommentByIdReturnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}/comments/{id}", postId, notExistId))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -147,10 +154,29 @@ public class CommentControllerIntegrationTest {
     }
 
     @Test
+    void testPutCommentReturnsNotFound() throws Exception {
+        String json = """
+                {
+                    "id": ###id###,
+                    "postId": ###postId###,
+                    "text": "Some comment 1.(updated)"
+                }
+                """
+                .replace("###id###", notExistId.toString())
+                .replace("###postId###", postId.toString());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/posts/{postId}/comments/{id}", postId, notExistId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testDeleteComment() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/posts/{postId}/comments/{id}", postId, commentId))
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/posts/{postId}/comments", postId))
                 .andExpect(status().isOk())
@@ -159,5 +185,12 @@ public class CommentControllerIntegrationTest {
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[0].text").value("Some comment 2."))
                 .andExpect(jsonPath("$[1].text").value("Some comment 3."));
+    }
+
+    @Test
+    void testDeleteCommentReturnsNoContent() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/posts/{postId}/comments/{id}", postId, notExistId))
+                .andExpect(status().isNotFound());
     }
 }

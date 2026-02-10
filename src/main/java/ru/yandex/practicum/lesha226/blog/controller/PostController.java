@@ -2,11 +2,11 @@ package ru.yandex.practicum.lesha226.blog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.lesha226.blog.exception.PostNotCreateException;
+import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.model.PostsPage;
 import ru.yandex.practicum.lesha226.blog.service.PostService;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/posts")
@@ -29,30 +29,28 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public Post getPost(@PathVariable(name = "id") Long id){
-        return service.findById(id).orElse(null);
+    public Post getPost(@PathVariable(name = "id") Long id) throws PostNotFoundException {
+        return service.findById(id);
     }
 
     @PostMapping
-    @ResponseStatus(code = HttpStatus.CREATED)
-    public Post save(@RequestBody Post post) {
-        return service.save(post).orElse(null);
+    public Post save(@RequestBody Post post) throws PostNotCreateException, PostNotFoundException {
+        return service.save(post);
     }
 
     @PutMapping("/{id}")
-    public Post update(@RequestBody Post post) {
-        return service.update(post).orElse(null);
+    public Post update(@RequestBody Post post) throws PostNotFoundException {
+        return service.update(post);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(code = HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(name = "id") Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable(name = "id") Long id) throws PostNotFoundException {
         service.delete(id);
     }
 
     @PostMapping("/{id}/likes")
-    @ResponseBody
-    public int like(@PathVariable(name = "id") Long id) {
-        return service.like(id);
+    public int like(@PathVariable(name = "id") Long id) throws PostNotFoundException {
+        return service.like(id).getLikesCount();
     }
 }

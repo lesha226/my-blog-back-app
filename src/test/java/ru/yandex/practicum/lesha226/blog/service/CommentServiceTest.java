@@ -2,12 +2,12 @@ package ru.yandex.practicum.lesha226.blog.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
 
@@ -19,6 +19,9 @@ import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig(classes = ServiceTestConfig.class)
 class CommentServiceTest {
+
+    private final Comment tempComment = new Comment(null, 100L, "Some comment.");
+    private final Comment resultComment = new Comment(1L, 100L, "Some comment.");
 
     @Autowired
     private CommentRepository repository;
@@ -33,7 +36,6 @@ class CommentServiceTest {
 
     @Test
     void findAll() {
-        final Comment resultComment = new Comment(1L, 100L, "Some comment.");
         when(repository.findAllByPostId(100L)).thenReturn(List.of(resultComment));
 
         List<Comment> result = service.findAll(100L);
@@ -42,25 +44,30 @@ class CommentServiceTest {
     }
 
     @Test
-    void findById() {
-        final Comment resultComment = new Comment(1L, 100L, "Some comment.");
+    void testFindById() throws CommentNotFoundException {
         when(repository.findById(1L)).thenReturn(Optional.of(resultComment));
 
-        Comment result = service.findById(1L).orElse(null);
+        Comment result = service.findById(1L);
 
         verify(repository).findById(1L);
         assertEquals(resultComment, result);
     }
 
     @Test
-    void save() {
-        final Comment tempComment = new Comment(null, 100L, "Some comment.");
-        final Comment resultComment = new Comment(1L, 100L, "Some comment.");
+    void testFindByIdThrowException() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
+        assertThrows(CommentNotFoundException.class, () -> {
+            Comment result = service.findById(1L);
+        });
+    }
+
+    @Test
+    void testSave() {
         when(repository.save(tempComment)).thenReturn(1L);
         when(repository.findById(1L)).thenReturn(Optional.of(resultComment));
 
-        Comment result = service.save(tempComment).orElse(null);
+        Comment result = service.save(tempComment);
 
         verify(repository).save(tempComment);
         verify(repository).findById(1L);
@@ -68,21 +75,42 @@ class CommentServiceTest {
     }
 
     @Test
-    void update() {
-        Comment resultComment = new Comment(1L, 100L, "Some comment.");
+    void testUpdate() throws CommentNotFoundException {
+        when(repository.update(resultComment)).thenReturn(true);
         when(repository.findById(1L)).thenReturn(Optional.of(resultComment));
 
-        Comment result = service.update(resultComment).orElse(null);
+        Comment result = service.update(resultComment);
 
         verify(repository).update(resultComment);
         verify(repository).findById(resultComment.getId());
         assertEquals(resultComment, result);
     }
 
+    @ParameterizedTest
+    @CsvSource({"true", "false"})
+    void testUpdateThrowException(boolean isUpdated) {
+        when(repository.update(resultComment)).thenReturn(isUpdated);
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(CommentNotFoundException.class, () -> {
+            Comment result = service.update(resultComment);
+        });
+    }
+
     @Test
-    void delete() {
+    void testDelete() throws CommentNotFoundException {
+        when(repository.delete(1L)).thenReturn(true);
         service.delete(1L);
 
         verify(repository).delete(1L);
+    }
+
+    @Test
+    void testDeleteThrowException() {
+        when(repository.delete(1L)).thenReturn(false);
+
+        assertThrows(CommentNotFoundException.class, () -> {
+            service.delete(1L);
+        });
     }
 }

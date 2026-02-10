@@ -1,15 +1,14 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.model.PostsPage;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -44,27 +43,35 @@ public class PostService {
         return new PostsPage(postList, hasPrev, hasNext, lastPage);
     }
 
-    public Optional<Post> findById(Long id) {
-        return repository.findById(id);
+    public Post findById(Long id) throws PostNotFoundException {
+        return repository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public Optional<Post> save(Post post) {
+    public Post save(Post post) throws PostNotFoundException {
         Long id = repository.save(post);
-        return repository.findById(id);
+        return repository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(post.getId()));
     }
 
-    public Optional<Post> update(Post post) {
-        repository.update(post);
-        return repository.findById(post.getId());
+    public Post update(Post post) throws PostNotFoundException {
+        if (!repository.update(post)) {
+            throw new PostNotFoundException(post.getId());
+        };
+        return repository.findById(post.getId())
+                .orElseThrow(() -> new PostNotFoundException(post.getId()));
     }
 
-    public void delete(Long id) {
-        repository.delete(id);
+    public void delete(Long id) throws PostNotFoundException {
+        if (!repository.delete(id)) {
+            throw new PostNotFoundException(id);
+        };
     }
 
-    public int like(Long id) {
+    public Post like(Long id) throws PostNotFoundException {
         repository.like(id);
-        return repository.findById(id).map(Post::getLikesCount).orElse(0);
+        return repository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
 }

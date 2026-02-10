@@ -69,17 +69,19 @@ public class JdbcNativeCommentRepository implements CommentRepository {
     }
 
     @Override
-    public void update(Comment comment) {
-        jdbcTemplate.update("""
+    public boolean update(Comment comment) {
+        int rowCount = jdbcTemplate.update("""
                 update comments
                 set text = ?
                 where id = ?""", comment.getText(), comment.getId());
+        return rowCount > 0;
     }
 
     @Override
-    public void delete(Long id) {
-        jdbcTemplate.update("""
+    public boolean delete(Long id) {
+        int rowCount = jdbcTemplate.update("""
                 delete from comments
                 where id = ?""", id);
+        return rowCount > 0;
     }
 }

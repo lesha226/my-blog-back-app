@@ -1,6 +1,10 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.lesha226.blog.exception.CommentNotCreateException;
+import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
+import ru.yandex.practicum.lesha226.blog.exception.NotCreateException;
+import ru.yandex.practicum.lesha226.blog.exception.NotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
 
@@ -19,21 +23,29 @@ public class CommentService {
         return repository.findAllByPostId(postId);
     }
 
-    public Optional<Comment> findById(Long id) {
-        return repository.findById(id);
+    public Comment findById(Long id) throws CommentNotFoundException {
+        return repository.findById(id)
+                .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
-    public Optional<Comment> save(Comment comment) {
+    public Comment save(Comment comment) throws CommentNotCreateException {
         Long id = repository.save(comment);
-        return repository.findById(id);
+        return repository.findById(id)
+                .orElseThrow(() -> new CommentNotCreateException(comment));
     }
 
-    public Optional<Comment> update(Comment comment) {
-        repository.update(comment);
-        return repository.findById(comment.getId());
+    public Comment update(Comment comment) throws CommentNotFoundException {
+        if (!repository.update(comment)) {
+            throw new CommentNotFoundException(comment.getId());
+        };
+
+        return repository.findById(comment.getId())
+                .orElseThrow(() -> new CommentNotFoundException(comment.getId()));
     }
 
-    public void delete(Long id) {
-        repository.delete(id);
+    public void delete(Long id) throws CommentNotFoundException {
+        if (!repository.delete(id)) {
+            throw new CommentNotFoundException(id);
+        };
     }
 }

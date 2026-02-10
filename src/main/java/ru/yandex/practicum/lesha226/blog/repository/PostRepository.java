@@ -14,9 +14,9 @@ public interface PostRepository {
 
     Long save(Post post);
 
-    void update(Post post);
+    boolean update(Post post);
 
-    void delete(Long id);
+    boolean delete(Long id);
 
     void like(Long id);
 }

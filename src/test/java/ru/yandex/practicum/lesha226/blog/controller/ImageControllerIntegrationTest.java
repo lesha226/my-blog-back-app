@@ -37,6 +37,7 @@ public class ImageControllerIntegrationTest {
 
     private MockMvc mockMvc;
     private Long postId;
+    private final Long notExistPostId = -1L;
 
     @BeforeEach
     void setUp() {
@@ -54,7 +55,7 @@ public class ImageControllerIntegrationTest {
     }
 
     @Test
-    void testImage() throws Exception {
+    void testSetImageAndGetImage() throws Exception {
         byte[] imageBody = new byte[]{(byte) 137, 80, 78, 71};
         MockMultipartFile file = new MockMultipartFile("image", "image.jpg",
                 MediaType.IMAGE_JPEG_VALUE, imageBody);
@@ -69,5 +70,24 @@ public class ImageControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG))
                 .andExpect(content().bytes(imageBody));
+    }
+
+    @Test
+    void testGetImageReturnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .get("/posts/{postId}/image", notExistPostId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testSetImageReturnsNotFound() throws Exception {
+        byte[] imageBody = new byte[]{(byte) 137, 80, 78, 71};
+        MockMultipartFile file = new MockMultipartFile("image", "image.jpg",
+                MediaType.IMAGE_JPEG_VALUE, imageBody);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .multipart(HttpMethod.PUT,"/posts/{postId}/image", notExistPostId)
+                        .file(file))
+                .andExpect(status().isNotFound());
     }
 }

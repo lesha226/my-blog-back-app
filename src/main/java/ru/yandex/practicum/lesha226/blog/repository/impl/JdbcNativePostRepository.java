@@ -3,10 +3,8 @@ package ru.yandex.practicum.lesha226.blog.repository.impl;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
@@ -100,8 +98,8 @@ public class JdbcNativePostRepository implements PostRepository {
     }
 
     @Override
-    public void update(Post post) {
-        template.update(
+    public boolean update(Post post) {
+        int rowCount = template.update(
                 con -> {
                     PreparedStatement ps = con.prepareStatement("""
                             update posts
@@ -115,14 +113,16 @@ public class JdbcNativePostRepository implements PostRepository {
                     ps.setLong(4, post.getId());
                     return ps;
                 });
+        return rowCount > 0;
     }
 
     @Override
-    public void delete(Long id) {
-        template.update("""
+    public boolean delete(Long id) {
+        int rowCount = template.update("""
                 delete from posts
                 where id = ?""", id);
 
+        return rowCount > 0;
     }
 
     @Override

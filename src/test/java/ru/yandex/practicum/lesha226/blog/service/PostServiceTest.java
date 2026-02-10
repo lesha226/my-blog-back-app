@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.model.PostsPage;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
@@ -15,10 +16,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @SpringJUnitConfig(classes = ServiceTestConfig.class)
 class PostServiceTest {
+    private final List<String> tags = List.of("tag1", "tag2");
+    private final Post newPost = new Post(null, "Title", "Some text.", tags, 3, 4);
+    private final Post post = new Post(1L, "Title", "Some text.", tags, 3, 4);
 
     @Autowired
     private PostRepository repository;
@@ -77,60 +82,95 @@ class PostServiceTest {
     }
 
     @Test
-    void testFindById() {
-        final Post post = new Post(1L, "Title", "Some text.", List.of("tag1", "tag2"), 3, 4);
+    void testFindById() throws PostNotFoundException {
         when(repository.findById(1L)).thenReturn(Optional.of(post));
 
-        Post result = service.findById(1L).orElse(null);
+        Post result = service.findById(1L);
 
         verify(repository).findById(1L);
         assertEquals(post, result);
     }
 
     @Test
-    void testSave() {
-        final Post tempPost = new Post(null, "Title", "Some text.", List.of("tag1"), 3, 4);
-        final Post resultPost = new Post(null, "Title", "Some text.", List.of("tag1"), 3, 4);
+    void testFindByIdThrowException() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
 
-        when(repository.save(tempPost)).thenReturn(1L);
-        when(repository.findById(1L)).thenReturn(Optional.of(resultPost));
-
-        Post result = service.save(tempPost).orElse(null);
-
-        verify(repository).save(tempPost);
-        verify(repository).findById(1L);
-        assertEquals(resultPost, result);
+        assertThrows(PostNotFoundException.class, () -> {
+            Post result = service.findById(1L);
+        });
     }
 
     @Test
-    void testUpdate() {
-        final Post post = new Post(1L, "Title", "Some text.", List.of("tag1"), 3, 4);
+    void testSave() throws PostNotFoundException {
+        when(repository.save(newPost)).thenReturn(1L);
         when(repository.findById(1L)).thenReturn(Optional.of(post));
 
-        Post result = service.update(post).orElse(null);
+        Post result = service.save(newPost);
+
+        verify(repository).save(newPost);
+        verify(repository).findById(1L);
+        assertEquals(post, result);
+    }
+
+    @Test
+    void testUpdate() throws PostNotFoundException {
+        when(repository.update(post)).thenReturn(true);
+        when(repository.findById(1L)).thenReturn(Optional.of(post));
+
+        Post result = service.update(post);
 
         verify(repository).update(post);
         verify(repository).findById(post.getId());
         assertEquals(post, result);
     }
 
+    @ParameterizedTest
+    @CsvSource({"true", "false"})
+    void testUpdateThrowException(boolean isUpdated) {
+        when(repository.update(post)).thenReturn(isUpdated);
+        when(repository.findById(post.getId())).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class, () -> {
+            Post result = service.update(post);
+        });
+    }
+
     @Test
-    void testDelete() {
+    void testDelete() throws PostNotFoundException {
+        when(repository.delete(1L)).thenReturn(true);
+
         service.delete(1L);
 
         verify(repository).delete(1L);
     }
 
     @Test
-    void testLike() {
-        final Post post = new Post(1L, "Title", "Some text.", List.of("tag1"), 3, 4);
+    void testDeleteThrowException() {
+        when(repository.delete(1L)).thenReturn(false);
+
+        assertThrows(PostNotFoundException.class, () -> {
+            service.delete(1L);
+        });
+    }
+
+    @Test
+    void testLike() throws PostNotFoundException {
         when(repository.findById(1L)).thenReturn(Optional.of(post));
 
-        int result = service.like(1L);
+        int result = service.like(1L).getLikesCount();
 
         verify(repository).like(1L);
         verify(repository).findById(1L);
         assertEquals(3, result);
 
+    }
+
+    @Test
+    void testLikeThrowException() {
+        when(repository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(PostNotFoundException.class, () -> {
+            int result = service.like(1L).getLikesCount();
+        });
     }
 }

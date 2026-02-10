@@ -8,5 +8,5 @@ public interface ImageRepository {
 
     Optional<Image> findByPostId(Long postId);
 
-    void update(Image image);
+    boolean update(Image image);
 }

@@ -41,6 +41,8 @@ public class PostControllerIntegrationTest {
 
     private MockMvc mockMvc;
 
+    private final Long notExistId = -1L;
+
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -109,7 +111,7 @@ public class PostControllerIntegrationTest {
     }
 
     @Test
-    void testGetById() throws Exception {
+    void testGetPost() throws Exception {
         Post post = new Post(null, "Some title.", "Some text", List.of("tag1", "tag2"), 0, 0);
         Long id = postRepository.save(post);
 
@@ -127,6 +129,12 @@ public class PostControllerIntegrationTest {
     }
 
     @Test
+    void testGetPostReturnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/posts/{id}", notExistId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testPostPost() throws Exception {
         String json = """
                 {"title": "Some post title","text": "Some post text.","tags": ["tag_1", "tag_2"]}
@@ -135,7 +143,7 @@ public class PostControllerIntegrationTest {
                         .post("/posts")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
-                .andExpect(status().isCreated())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id").isNumber())
                 .andExpect(jsonPath("$.title").value("Some post title"));
@@ -170,6 +178,22 @@ public class PostControllerIntegrationTest {
     }
 
     @Test
+    void testPutPostReturnsNotFound() throws Exception {
+        String json = """
+                {"id": ###,
+                "title": "Some title.",
+                "text": "Some text.(updated)",
+                "tags": ["tag1", "tag2", "tag3"]}
+                """.replace("###", notExistId.toString());
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/posts/{id}", notExistId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testDeletePost() throws Exception{
         Post post = new Post(null, "Some title.", "Some text.", List.of("tag1", "tag2"), 0, 0);
         Long id = postRepository.save(post);
@@ -178,6 +202,13 @@ public class PostControllerIntegrationTest {
                         .delete("/posts/{id}", id))
                 .andExpect(status().isNoContent());
 
+    }
+
+    @Test
+    void testDeletePostReturnsNotFound() throws Exception{
+        mockMvc.perform(MockMvcRequestBuilders
+                        .delete("/posts/{id}", notExistId))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -196,6 +227,13 @@ public class PostControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$").value(2));
+    }
+
+    @Test
+    void testPostLikeReturnsNotFound() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/posts/{id}/likes", notExistId))
+                .andExpect(status().isNotFound());
     }
 }
 

@@ -18,9 +18,8 @@ import ru.yandex.practicum.lesha226.blog.configuration.RestConfig;
 @ComponentScan(basePackages = {
         "ru.yandex.practicum.lesha226.blog.service",
         "ru.yandex.practicum.lesha226.blog.controller",
-        "ru.yandex.practicum.lesha226.blog.repository"})
-/*@ComponentScan(basePackages = {
-        "ru.yandex.practicum.lesha226.blog"})*/
+        "ru.yandex.practicum.lesha226.blog.repository",
+        "ru.yandex.practicum.lesha226.blog.exception"})
 public class IntegrationTestConfig {
 }
 

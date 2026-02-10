@@ -45,10 +45,14 @@ public class JdbcNativeImageRepository implements ImageRepository {
     }
 
     @Override
-    public void update(Image image) {
+    public boolean update(Image image) {
         ByteArrayInputStream bodyStream = new ByteArrayInputStream(image.getBody());
-        template.update("""
-                merge into images(post_id, body)
-                values (?, ?)""", image.getPostId(), bodyStream);
+        int rowCount = template.update("""
+                merge into images(post_id, body) key(post_id)
+                select t.post_id, t.body
+                from table(post_id bigint = ?, body blob = ?) t
+                where exists(select 1 from posts p where p.id = t.post_id)
+                """, image.getPostId(), bodyStream);
+        return rowCount > 0;
     }
 }
