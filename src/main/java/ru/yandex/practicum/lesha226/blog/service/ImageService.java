@@ -16,12 +16,15 @@ public class ImageService {
         this.repository = repository;
     }
 
-    public Image findByPostId(Long postId) throws ImageNotFoundException {
+    public byte[] findByPostId(Long postId) throws ImageNotFoundException {
         return repository.findByPostId(postId)
-                .orElseThrow(() -> new ImageNotFoundException(postId));
+                .orElseThrow(() -> new ImageNotFoundException(postId))
+                .getBody();
     }
 
-    public void update(Image image) throws ImageNotFoundException {
+    public void update(Long postId, byte[] body) throws ImageNotFoundException {
+        Image image = new Image(postId, body);
+
         if (!repository.update(image)) {
             throw new ImageNotFoundException(image.getPostId());
         };

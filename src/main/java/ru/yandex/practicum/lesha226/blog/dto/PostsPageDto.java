@@ -1,27 +1,27 @@
-package ru.yandex.practicum.lesha226.blog.model;
+package ru.yandex.practicum.lesha226.blog.dto;
 
 import java.util.List;
 import java.util.Objects;
 
-public class PostsPage {
+public class PostsPageDto {
 
-    private List<Post> posts;
+    private List<PostDto> posts;
     private boolean hasPrev;
     private boolean hasNext;
     private int lastPage;
 
-    public PostsPage(List<Post> posts, boolean hasPrev, boolean hasNext, int lastPage) {
+    public PostsPageDto(List<PostDto> posts, boolean hasPrev, boolean hasNext, int lastPage) {
         this.posts = posts;
         this.hasPrev = hasPrev;
         this.hasNext = hasNext;
         this.lastPage = lastPage;
     }
 
-    public List<Post> getPosts() {
+    public List<PostDto> getPosts() {
         return posts;
     }
 
-    public void setPosts(List<Post> posts) {
+    public void setPosts(List<PostDto> posts) {
         this.posts = posts;
     }
 
@@ -52,8 +52,8 @@ public class PostsPage {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        PostsPage postsPage = (PostsPage) o;
-        return hasPrev == postsPage.hasPrev && hasNext == postsPage.hasNext && lastPage == postsPage.lastPage && Objects.equals(posts, postsPage.posts);
+        PostsPageDto postsPageDto = (PostsPageDto) o;
+        return hasPrev == postsPageDto.hasPrev && hasNext == postsPageDto.hasNext && lastPage == postsPageDto.lastPage && Objects.equals(posts, postsPageDto.posts);
     }
 
     @Override

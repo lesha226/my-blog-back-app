@@ -2,8 +2,8 @@ package ru.yandex.practicum.lesha226.blog.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.lesha226.blog.dto.CommentDto;
 import ru.yandex.practicum.lesha226.blog.exception.*;
-import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.service.CommentService;
 
 import java.util.Collections;
@@ -22,30 +22,30 @@ public class CommentController {
 
     // TODO : fix front GET http://localhost:8080/api/posts/undefined/comments
     @GetMapping("/undefined/comments")
-    public List<Comment> getUndefinedComment() { return Collections.emptyList(); }
+    public List<CommentDto> getUndefinedComment() { return Collections.emptyList(); }
 
     @GetMapping("/{postId}/comments")
-    public List<Comment> getCommentList(@PathVariable(name = "postId") Long postId) {
+    public List<CommentDto> getCommentList(@PathVariable(name = "postId") Long postId) {
         return service.findAll(postId);
     }
 
     @GetMapping("/{postId}/comments/{id}")
-    public Comment getComment(@PathVariable(name = "postId") Long postId,
-                              @PathVariable(name = "id") Long id) throws NotFoundException {
+    public CommentDto getComment(@PathVariable(name = "postId") Long postId,
+                                 @PathVariable(name = "id") Long id) throws NotFoundException {
         return service.findById(id);
     }
 
     @PostMapping("/{postId}/comments")
-    public Comment save(@PathVariable(name = "postId") Long postId,
-                        @RequestBody Comment comment) throws NotCreateException {
-        return service.save(comment);
+    public CommentDto save(@PathVariable(name = "postId") Long postId,
+                        @RequestBody CommentDto commentDto) throws NotCreateException {
+        return service.save(commentDto);
     }
 
     @PutMapping("/{postId}/comments/{id}")
-    public Comment updateComment(@PathVariable(name = "postId") Long postId,
+    public CommentDto updateComment(@PathVariable(name = "postId") Long postId,
                                  @PathVariable(name = "id") Long id,
-                                 @RequestBody Comment comment) throws NotFoundException {
-        return service.update(comment);
+                                 @RequestBody CommentDto commentDto) throws NotFoundException {
+        return service.update(commentDto);
     }
 
     @DeleteMapping("/{postId}/comments/{id}")

@@ -23,22 +23,23 @@ public class ImageController {
 
     @GetMapping(produces = MediaType.IMAGE_JPEG_VALUE)
     public byte[] getImage(@PathVariable(name = "postId") Long postId) throws ImageNotFoundException {
-        return service.findByPostId(postId).getBody();
+        return service.findByPostId(postId);
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(code = HttpStatus.CREATED)
-    public void updateImage(@PathVariable("postId") Long postId, @RequestParam("image") MultipartFile file) throws ImageNotFoundException {
+    public void putImage(@PathVariable("postId") Long postId, @RequestParam("image") MultipartFile file) throws ImageNotFoundException {
+        byte[] body;
         if (!file.isEmpty()) {
-            byte[] body;
             try {
                 body = file.getBytes();
             } catch (IOException e) {
                 body = new byte[] {};
             }
-            Image image = new Image(postId, body);
-
-            service.update(image);
+        } else {
+            body = new byte[] {};
         }
+
+        service.update(postId, body);
     }
 }
