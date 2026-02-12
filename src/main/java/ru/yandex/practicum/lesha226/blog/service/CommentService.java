@@ -1,10 +1,12 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.lesha226.blog.dto.CommentDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentCreateDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentResponseDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.CommentNotCreateException;
 import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
-import ru.yandex.practicum.lesha226.blog.mapper.CommentMapper;
+import ru.yandex.practicum.lesha226.blog.service.mapper.CommentMapper;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
 
@@ -14,42 +16,47 @@ import java.util.List;
 public class CommentService {
 
     private final CommentRepository repository;
-    private final CommentMapper mapper = CommentMapper.INSTANCE;
+    private final CommentMapper mapper;
 
-    public CommentService(CommentRepository repository) {
+    public CommentService(CommentRepository repository, CommentMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public List<CommentDto> findAll(Long postId) {
+    public List<CommentResponseDto> findAll(Long postId) {
         List<Comment> commentList = repository.findAllByPostId(postId);
 
         return mapper.toDto(commentList);
     }
 
-    public CommentDto findById(Long id) throws CommentNotFoundException {
+    public CommentResponseDto findById(Long id) throws CommentNotFoundException {
         return repository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
-    public CommentDto save(CommentDto commentDto) throws CommentNotCreateException {
-        Comment comment = mapper.fromDto(commentDto);
+    public CommentResponseDto save(CommentCreateDto dto) throws CommentNotCreateException {
+        Comment comment = mapper.fromDto(dto);
 
         Long id = repository.save(comment);
+
         return repository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new CommentNotCreateException(comment));
     }
 
-    public CommentDto update(CommentDto commentDto) throws CommentNotFoundException {
-        Comment comment = mapper.fromDto(commentDto);
+    public CommentResponseDto update(Long id, CommentUpdateDto dto) throws CommentNotFoundException {
+        Comment comment = repository.findById(dto.id())
+                .orElseThrow(() -> new CommentNotFoundException(id));
+
+        mapper.updateFromDto(dto, comment);
         if (!repository.update(comment)) {
             throw new CommentNotFoundException(comment.getId());
         };
 
-        return repository.findById(comment.getId())
+        return repository.findById(id)
                 .map(mapper::toDto)
-                .orElseThrow(() -> new CommentNotFoundException(comment.getId()));
+                .orElseThrow(() -> new CommentNotFoundException(id));
     }
 
     public void delete(Long id) throws CommentNotFoundException {

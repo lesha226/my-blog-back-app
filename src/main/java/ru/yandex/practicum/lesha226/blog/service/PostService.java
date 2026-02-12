@@ -1,28 +1,30 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.lesha226.blog.dto.PostDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
-import ru.yandex.practicum.lesha226.blog.mapper.PostMapper;
+import ru.yandex.practicum.lesha226.blog.service.mapper.PostMapper;
 import ru.yandex.practicum.lesha226.blog.model.Post;
-import ru.yandex.practicum.lesha226.blog.dto.PostsPageDto;
+import ru.yandex.practicum.lesha226.blog.dto.PageDto;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
 import ru.yandex.practicum.lesha226.blog.service.utils.SearchStringParser;
 
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 public class PostService {
 
     private final PostRepository repository;
-    private final PostMapper mapper = PostMapper.INSTANCE;
+    private final PostMapper mapper;
 
-    public PostService(PostRepository repository) {
+    public PostService(PostRepository repository, PostMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
-    public PostsPageDto getPostPage(String search, int pageNumber, int pageSize) {
+    public PageDto getPostPage(String search, int pageNumber, int pageSize) {
         SearchStringParser parser = new SearchStringParser(search);
 
         int offset = (pageNumber - 1) * pageSize;
@@ -34,28 +36,32 @@ public class PostService {
         boolean hasPrev = pageNumber > 1;
         boolean hasNext = pageNumber < lastPage;
 
-        return new PostsPageDto(mapper.toDto(postList), hasPrev, hasNext, lastPage);
+        return new PageDto(mapper.toDto(postList), hasPrev, hasNext, lastPage);
     }
 
-    public PostDto findById(Long id) throws PostNotFoundException {
+    public PostResponseDto findById(Long id) throws PostNotFoundException {
         return repository.findById(id)
                 .map(mapper::toDto)
                 .orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public PostDto save(PostDto dto) throws PostNotFoundException {
+    public PostResponseDto save(PostCreateDto dto) throws PostNotFoundException {
         Post post = mapper.fromDto(dto);
         Long id = repository.save(post);
         return repository.findById(id)
                 .map(mapper::toDto)
-                .orElseThrow(() -> new PostNotFoundException(post.getId()));
+                .orElseThrow(() -> new PostNotFoundException(id));
     }
 
-    public PostDto update(PostDto dto) throws PostNotFoundException {
-        Post post = mapper.fromDto(dto);
+    public PostResponseDto update(Long id, PostUpdateDto dto) throws PostNotFoundException {
+        Post post = repository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(id));
+
+        mapper.updateFromDto(dto, post);
         if (!repository.update(post)) {
             throw new PostNotFoundException(post.getId());
         };
+
         return repository.findById(post.getId())
                 .map(mapper::toDto)
                 .orElseThrow(() -> new PostNotFoundException(post.getId()));

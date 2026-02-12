@@ -2,12 +2,12 @@ package ru.yandex.practicum.lesha226.blog.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
-import ru.yandex.practicum.lesha226.blog.dto.CommentDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentResponseDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentCreateDto;
+import ru.yandex.practicum.lesha226.blog.dto.CommentUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
@@ -23,8 +23,9 @@ class CommentServiceTest {
     private final Long id = 1L;
     private final Long postId = 100L;
     private final String tempText = "Some comment.";
-    private final CommentDto newDto = new CommentDto(null, postId, tempText);
-    private final CommentDto dto = new CommentDto(id, postId, tempText);
+    private final CommentCreateDto newDto = new CommentCreateDto(tempText, postId);
+    private final CommentUpdateDto updDto = new CommentUpdateDto(id, tempText, postId);
+    private final CommentResponseDto dto = new CommentResponseDto(id, tempText, postId);
     private final Comment newComment = new Comment(null, postId, tempText);
     private final Comment resultComment = new Comment(id, postId, tempText);
 
@@ -43,7 +44,7 @@ class CommentServiceTest {
     void findAll() {
         when(repository.findAllByPostId(postId)).thenReturn(List.of(resultComment));
 
-        List<CommentDto> result = service.findAll(postId);
+        List<CommentResponseDto> result = service.findAll(postId);
 
         assertEquals(List.of(dto), result);
     }
@@ -52,7 +53,7 @@ class CommentServiceTest {
     void testFindById() throws CommentNotFoundException {
         when(repository.findById(id)).thenReturn(Optional.of(resultComment));
 
-        CommentDto result = service.findById(id);
+        CommentResponseDto result = service.findById(id);
 
         verify(repository).findById(id);
         assertEquals(dto, result);
@@ -63,7 +64,7 @@ class CommentServiceTest {
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> {
-            CommentDto result = service.findById(id);
+            CommentResponseDto result = service.findById(id);
         });
     }
 
@@ -72,7 +73,7 @@ class CommentServiceTest {
         when(repository.save(newComment)).thenReturn(id);
         when(repository.findById(id)).thenReturn(Optional.of(resultComment));
 
-        CommentDto result = service.save(newDto);
+        CommentResponseDto result = service.save(newDto);
 
         verify(repository).save(newComment);
         verify(repository).findById(id);
@@ -81,24 +82,22 @@ class CommentServiceTest {
 
     @Test
     void testUpdate() throws CommentNotFoundException {
+        when(repository.findById(id)).thenReturn(Optional.of(resultComment)).thenReturn(Optional.of(resultComment));
         when(repository.update(resultComment)).thenReturn(true);
-        when(repository.findById(id)).thenReturn(Optional.of(resultComment));
 
-        CommentDto result = service.update(dto);
+        CommentResponseDto result = service.update(id, updDto);
 
+        verify(repository, times(2)).findById(resultComment.getId());
         verify(repository).update(resultComment);
-        verify(repository).findById(resultComment.getId());
         assertEquals(dto, result);
     }
 
-    @ParameterizedTest
-    @CsvSource({"true", "false"})
-    void testUpdateThrowException(boolean isUpdated) {
-        when(repository.update(resultComment)).thenReturn(isUpdated);
+    @Test
+    void testUpdateThrowException() {
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(CommentNotFoundException.class, () -> {
-            CommentDto result = service.update(dto);
+            CommentResponseDto result = service.update(id, updDto);
         });
     }
 

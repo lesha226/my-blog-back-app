@@ -7,10 +7,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
-import ru.yandex.practicum.lesha226.blog.dto.PostDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
-import ru.yandex.practicum.lesha226.blog.dto.PostsPageDto;
+import ru.yandex.practicum.lesha226.blog.dto.PageDto;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
 
 import java.util.List;
@@ -19,15 +21,20 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
 
 @SpringJUnitConfig(classes = ServiceTestConfig.class)
 class PostServiceTest {
     private final Long id = 1L;
+    private final String title = "Some title";
+    private final String text = "Some text";
     private final List<String> tags = List.of("tag1", "tag2");
-    private final Post newPost = new Post(null, "Title", "Some text.", tags, 3, 4);
-    private final Post post = new Post(id, "Title", "Some text.", tags, 3, 4);
-    private final PostDto newDto = new PostDto(null, "Title", "Some text.", tags, 3, 4);
-    private final PostDto dto = new PostDto(id, "Title", "Some text.", tags, 3, 4);
+    //private final List<String> tags = new ArrayList<>(List.of("tag1", "tag2"));
+    private final Post newPost = new Post(null, title, text, tags, 0, 0);
+    private final Post post = new Post(id, title, text, tags, 3, 4);
+    private final PostCreateDto createDto = new PostCreateDto(title, text,tags);
+    private final PostUpdateDto updateDto = new PostUpdateDto(id, title, text,tags);
+    private final PostResponseDto dto = new PostResponseDto(id, title, text, tags, 3, 4);
 
     @Autowired
     private PostRepository repository;
@@ -66,16 +73,16 @@ class PostServiceTest {
         List<Post> postList = List.of(
                 new Post(1L, "Title 1", "Some text 1.", tags, 1, 2),
                 new Post(2L, "Title 2", "Some text 2.", tags, 3, 4));
-        List<PostDto> postDtoList = List.of(
-                new PostDto(1L, "Title 1", "Some text 1.", tags, 1, 2),
-                new PostDto(2L, "Title 2", "Some text 2.", tags, 3, 4));
-        PostsPageDto PageDto = new PostsPageDto(postDtoList, hasPrev, hasNext, lastPage);
+        List<PostResponseDto> postResponseDtoList = List.of(
+                new PostResponseDto(1L, "Title 1", "Some text 1.", tags, 1, 2),
+                new PostResponseDto(2L, "Title 2", "Some text 2.", tags, 3, 4));
+        PageDto PageDto = new PageDto(postResponseDtoList, hasPrev, hasNext, lastPage);
         String searchTitleString = "";
         List<String> tagList = List.of();
 
         when(repository.findAll(searchTitleString, tagList, offset, size)).thenReturn(postList);
         when(repository.size(searchTitleString, tagList)).thenReturn(5);
-        PostsPageDto result = service.getPostPage(searchTitleString, pageNumber, size);
+        PageDto result = service.getPostPage(searchTitleString, pageNumber, size);
         verify(repository).findAll(searchTitleString, tagList, offset, size);
         verify(repository).size(searchTitleString, tagList);
         assertEquals(PageDto, result);
@@ -85,7 +92,7 @@ class PostServiceTest {
     void testFindById() throws PostNotFoundException {
         when(repository.findById(id)).thenReturn(Optional.of(post));
 
-        PostDto result = service.findById(id);
+        PostResponseDto result = service.findById(id);
 
         verify(repository).findById(id);
         assertEquals(dto, result);
@@ -96,7 +103,7 @@ class PostServiceTest {
         when(repository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(PostNotFoundException.class, () -> {
-            PostDto result = service.findById(id);
+            PostResponseDto result = service.findById(id);
         });
     }
 
@@ -105,7 +112,7 @@ class PostServiceTest {
         when(repository.save(newPost)).thenReturn(id);
         when(repository.findById(id)).thenReturn(Optional.of(post));
 
-        PostDto result = service.save(newDto);
+        PostResponseDto result = service.save(createDto);
 
         verify(repository).save(newPost);
         verify(repository).findById(id);
@@ -115,23 +122,22 @@ class PostServiceTest {
     @Test
     void testUpdate() throws PostNotFoundException {
         when(repository.update(post)).thenReturn(true);
-        when(repository.findById(1L)).thenReturn(Optional.of(post));
+        when(repository.findById(id)).thenReturn(Optional.of(post)).thenReturn(Optional.of(post));
 
-        PostDto result = service.update(dto);
+        PostResponseDto result = service.update(id, updateDto);
 
         verify(repository).update(post);
-        verify(repository).findById(post.getId());
+        verify(repository, times(2)).findById(post.getId());
         assertEquals(dto, result);
     }
 
     @ParameterizedTest
     @CsvSource({"true", "false"})
     void testUpdateThrowException(boolean isUpdated) {
-        when(repository.update(post)).thenReturn(isUpdated);
         when(repository.findById(post.getId())).thenReturn(Optional.empty());
 
         assertThrows(PostNotFoundException.class, () -> {
-            PostDto result = service.update(dto);
+            PostResponseDto result = service.update(id, updateDto);
         });
     }
 

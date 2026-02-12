@@ -1,12 +1,14 @@
 package ru.yandex.practicum.lesha226.blog.controller;
 
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.lesha226.blog.dto.PostDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
+import ru.yandex.practicum.lesha226.blog.dto.PostUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.PostNotCreateException;
 import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
-import ru.yandex.practicum.lesha226.blog.model.Post;
-import ru.yandex.practicum.lesha226.blog.dto.PostsPageDto;
+import ru.yandex.practicum.lesha226.blog.dto.PageDto;
 import ru.yandex.practicum.lesha226.blog.service.PostService;
 
 @RestController
@@ -21,7 +23,7 @@ public class PostController {
     }
 
     @GetMapping
-    public PostsPageDto getPostsPage(
+    public PageDto getPostsPage(
             @RequestParam("search") String search,
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "1") int pageSize
@@ -30,28 +32,34 @@ public class PostController {
     }
 
     @GetMapping("/{id}")
-    public PostDto getPost(@PathVariable(name = "id") Long id) throws PostNotFoundException {
+    public PostResponseDto getPost(@PathVariable("id") Long id) throws PostNotFoundException {
         return service.findById(id);
     }
 
     @PostMapping
-    public PostDto save(@RequestBody PostDto dto) throws PostNotCreateException, PostNotFoundException {
+    public PostResponseDto save(@Valid @RequestBody PostCreateDto dto) throws PostNotCreateException, PostNotFoundException {
         return service.save(dto);
     }
 
     @PutMapping("/{id}")
-    public PostDto update(@RequestBody PostDto dto) throws PostNotFoundException {
-        return service.update(dto);
+    public PostResponseDto update(@PathVariable("id") Long id,
+                                  @Valid @RequestBody PostUpdateDto dto) throws PostNotFoundException {
+        return service.update(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(name = "id") Long id) throws PostNotFoundException {
+    public void delete(@PathVariable("id") Long id) throws PostNotFoundException {
         service.delete(id);
     }
 
     @PostMapping("/{id}/likes")
-    public int like(@PathVariable(name = "id") Long id) throws PostNotFoundException {
+    public int like(@PathVariable("id") Long id) throws PostNotFoundException {
         return service.like(id);
     }
+
+    /*@GetMapping("/test")
+    public String testEncoding() {
+        return "Привет, мир! UTF-8 работает.";
+    }*/
 }
