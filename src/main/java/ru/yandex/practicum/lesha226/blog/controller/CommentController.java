@@ -13,8 +13,7 @@ import java.util.Collections;
 import java.util.List;
 
 @RestController
-@RequestMapping("/posts")
-@CrossOrigin(origins = "http://localhost")
+@RequestMapping("/posts/{postId}/comments")
 public class CommentController {
 
     private final CommentService service;
@@ -23,40 +22,31 @@ public class CommentController {
         this.service = service;
     }
 
-    /*@InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.addValidators(new HibernateValidator());
-    }*/
-
-    // TODO : fix front GET http://localhost:8080/api/posts/undefined/comments
-    @GetMapping("/undefined/comments")
-    public List<CommentResponseDto> getUndefinedComment() { return Collections.emptyList(); }
-
-    @GetMapping("/{postId}/comments")
+    @GetMapping
     public List<CommentResponseDto> getCommentList(@PathVariable("postId") Long postId) {
         return service.findAll(postId);
     }
 
-    @GetMapping("/{postId}/comments/{id}")
+    @GetMapping("/{id}")
     public CommentResponseDto getComment(@PathVariable("postId") Long postId,
                                          @PathVariable("id") Long id) throws NotFoundException {
         return service.findById(id);
     }
 
-    @PostMapping("/{postId}/comments")
+    @PostMapping
     public CommentResponseDto saveComment(@PathVariable("postId") Long postId,
                                           @Valid @RequestBody CommentCreateDto dto) throws NotCreateException {
         return service.save(dto);
     }
 
-    @PutMapping("/{postId}/comments/{id}")
+    @PutMapping("/{id}")
     public CommentResponseDto updateComment(@PathVariable("postId") Long postId,
                                             @PathVariable("id") Long id,
                                             @Valid @RequestBody CommentUpdateDto dto) throws NotFoundException {
         return service.update(id, dto);
     }
 
-    @DeleteMapping("/{postId}/comments/{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable(name = "postId") Long postId,
                               @PathVariable(name = "id") Long id) throws NotFoundException {

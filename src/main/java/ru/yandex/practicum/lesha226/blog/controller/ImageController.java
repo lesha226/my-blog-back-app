@@ -12,7 +12,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/posts/{postId}/image")
-@CrossOrigin(origins = "http://localhost")
+@CrossOrigin()
 public class ImageController {
 
     private final ImageService service;
@@ -27,7 +27,6 @@ public class ImageController {
     }
 
     @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(code = HttpStatus.CREATED)
     public void putImage(@PathVariable("postId") Long postId, @RequestParam("image") MultipartFile file) throws ImageNotFoundException {
         byte[] body;
         if (!file.isEmpty()) {

@@ -63,7 +63,7 @@ public class ImageControllerIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders
                         .multipart(HttpMethod.PUT,"/posts/{postId}/image", postId)
                         .file(file))
-                .andExpect(status().isCreated());
+                .andExpect(status().isOk());
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/posts/{postId}/image", postId))
