@@ -11,6 +11,7 @@ public record PostUpdateDto(
         Long id,
 
         @NotBlank(message = "Title is blank")
+        @Size(max = 50)
         String title,
 
         @NotBlank(message = "Title is blank")

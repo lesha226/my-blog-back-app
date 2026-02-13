@@ -37,43 +37,39 @@ public class PostController {
     }
 
     @GetMapping
-    public PageDto getPostsPage(
+    public ResponseEntity<PageDto> getPostsPage(
             @RequestParam("search") String search,
             @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue = "1") int pageSize
     ) {
-        return service.getPostPage(search, pageNumber, pageSize);
+        return ResponseEntity.ok(service.getPostPage(search, pageNumber, pageSize));
     }
 
     @GetMapping("/{id}")
-    public PostResponseDto getPost(@PathVariable("id") Long id) throws PostNotFoundException {
-        return service.findById(id);
+    public ResponseEntity<PostResponseDto> getPost(@PathVariable("id") Long id) throws PostNotFoundException {
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping
-    public PostResponseDto save(@Valid @RequestBody PostCreateDto dto) throws PostNotCreateException, PostNotFoundException {
-        return service.save(dto);
+    public ResponseEntity<PostResponseDto> save(@Valid @RequestBody PostCreateDto dto) throws PostNotCreateException, PostNotFoundException {
+        return ResponseEntity.ok(service.save(dto));
     }
 
     @PutMapping("/{id}")
-    public PostResponseDto update(@PathVariable("id") Long id,
+    public ResponseEntity<PostResponseDto> update(@PathVariable("id") Long id,
                                   @Valid @RequestBody PostUpdateDto dto) throws PostNotFoundException {
-        return service.update(id, dto);
+        return ResponseEntity.ok(service.update(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") Long id) throws PostNotFoundException {
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<Object> delete(@PathVariable("id") Long id) throws PostNotFoundException {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/likes")
-    public int like(@PathVariable("id") Long id) throws PostNotFoundException {
-        return service.like(id);
+    public ResponseEntity<Integer> like(@PathVariable("id") Long id) throws PostNotFoundException {
+        return ResponseEntity.ok(service.like(id));
     }
-
-    /*@GetMapping("/test")
-    public String testEncoding() {
-        return "Привет, мир! UTF-8 работает.";
-    }*/
 }

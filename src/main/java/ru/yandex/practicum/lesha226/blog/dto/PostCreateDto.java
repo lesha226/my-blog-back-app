@@ -8,6 +8,7 @@ import java.util.List;
 
 public record PostCreateDto(
         @NotBlank(message = "Title is blank")
+        @Size(max = 50)
         String title,
 
         @NotBlank(message = "Title is blank")

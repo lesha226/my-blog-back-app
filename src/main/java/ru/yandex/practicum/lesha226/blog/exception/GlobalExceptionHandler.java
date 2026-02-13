@@ -47,17 +47,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
     }*/
 
-    /*@ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream().map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining("; "));
-
-        return ResponseEntity
-                .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(message);
-    }*/
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<String> handleValidationExceptions(
+            MethodArgumentNotValidException ex) {
+        String errors = ex.getBindingResult().getFieldErrors().stream()
+                //.findFirst()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining(";"));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+    }
 
 }

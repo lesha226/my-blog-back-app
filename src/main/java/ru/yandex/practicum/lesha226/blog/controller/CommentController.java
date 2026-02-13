@@ -2,6 +2,7 @@ package ru.yandex.practicum.lesha226.blog.controller;
 
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.lesha226.blog.dto.CommentResponseDto;
 import ru.yandex.practicum.lesha226.blog.dto.CommentCreateDto;
@@ -23,34 +24,38 @@ public class CommentController {
     }
 
     @GetMapping
-    public List<CommentResponseDto> getCommentList(@PathVariable("postId") Long postId) {
-        return service.findAll(postId);
+    public ResponseEntity<List<CommentResponseDto>> getCommentList(@PathVariable("postId") Long postId) {
+        List<CommentResponseDto> list = service.findAll(postId);
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/{id}")
-    public CommentResponseDto getComment(@PathVariable("postId") Long postId,
-                                         @PathVariable("id") Long id) throws NotFoundException {
-        return service.findById(id);
+    public ResponseEntity<CommentResponseDto> getComment(@PathVariable("postId") Long postId,
+                                                         @PathVariable("id") Long id) throws NotFoundException {
+        CommentResponseDto responseDto = service.findById(id);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PostMapping
-    public CommentResponseDto saveComment(@PathVariable("postId") Long postId,
+    public ResponseEntity<CommentResponseDto>  saveComment(@PathVariable("postId") Long postId,
                                           @Valid @RequestBody CommentCreateDto dto) throws NotCreateException {
-        return service.save(dto);
+        CommentResponseDto responseDto = service.save(dto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @PutMapping("/{id}")
-    public CommentResponseDto updateComment(@PathVariable("postId") Long postId,
+    public ResponseEntity<CommentResponseDto>  updateComment(@PathVariable("postId") Long postId,
                                             @PathVariable("id") Long id,
                                             @Valid @RequestBody CommentUpdateDto dto) throws NotFoundException {
-        return service.update(id, dto);
+        CommentResponseDto responseDto = service.update(id, dto);
+        return ResponseEntity.ok(responseDto);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteComment(@PathVariable(name = "postId") Long postId,
+    public ResponseEntity<Object> deleteComment(@PathVariable(name = "postId") Long postId,
                               @PathVariable(name = "id") Long id) throws NotFoundException {
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
 }
