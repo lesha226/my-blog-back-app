@@ -1,6 +1,7 @@
 package ru.yandex.practicum.lesha226.blog.controller;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,10 +28,9 @@ public class PostController {
     // TODO : fix front GET http://localhost:8080/api/posts/undefined/**
     @GetMapping({"/undefined", "/undefined/**"
             , "/undefined/comments", "/undefined/comments/*"
-            , "/undefined/image", "/undefined/comments/*"})
-    public ResponseEntity<Map<String, String>> getUndefinedComment() {
-        Map<String, String> result = new HashMap<>();
-        result.put("errors", "Post not found (id: undefined)");
+            , "/undefined/image", "/undefined/image/*"})
+    public ResponseEntity<String> getUndefinedComment() {
+        String result = "Post not found (id: undefined)";
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)
                 .body(result);
@@ -38,9 +38,9 @@ public class PostController {
 
     @GetMapping
     public ResponseEntity<PageDto> getPostsPage(
-            @RequestParam("search") String search,
-            @RequestParam(value = "pageNumber", defaultValue = "1") int pageNumber,
-            @RequestParam(value = "pageSize", defaultValue = "1") int pageSize
+            @RequestParam(name = "search", defaultValue = "") String search,
+            @RequestParam(name = "pageNumber", defaultValue = "1") @Min(1) int pageNumber,
+            @RequestParam(name = "pageSize", defaultValue = "1") @Min(1) int pageSize
     ) {
         return ResponseEntity.ok(service.getPostPage(search, pageNumber, pageSize));
     }
@@ -62,7 +62,6 @@ public class PostController {
     }
 
     @DeleteMapping("/{id}")
-    //@ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Object> delete(@PathVariable("id") Long id) throws PostNotFoundException {
         service.delete(id);
         return ResponseEntity.noContent().build();
