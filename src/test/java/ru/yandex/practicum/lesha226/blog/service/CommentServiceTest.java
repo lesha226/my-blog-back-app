@@ -1,12 +1,9 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.practicum.lesha226.blog.dto.CommentResponseDto;
 import ru.yandex.practicum.lesha226.blog.dto.CommentCreateDto;
 import ru.yandex.practicum.lesha226.blog.dto.CommentUpdateDto;
@@ -20,11 +17,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-// TODO : use @MockitoBean
-//тестирование в изолированном контексте ServiceTestConfig
-@SpringBootTest(classes = Object.class)
-@Import(ServiceTestConfig.class)
-@ActiveProfiles("service-test")
+@SpringBootTest
 class CommentServiceTest {
     private final Long id = 1L;
     private final Long postId = 100L;
@@ -35,16 +28,11 @@ class CommentServiceTest {
     private final Comment newComment = new Comment(null, postId, tempText);
     private final Comment resultComment = new Comment(id, postId, tempText);
 
-    @Autowired
+    @MockitoBean
     private CommentRepository repository;
 
     @Autowired
     private CommentService service;
-
-    @BeforeEach
-    void setUp() {
-        reset(repository);
-    }
 
     @Test
     void findAll() {

@@ -1,14 +1,11 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
 import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
 import ru.yandex.practicum.lesha226.blog.dto.PostUpdateDto;
@@ -25,11 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-// TODO : use @MockitoBean
-//тестирование в изолированном контексте ServiceTestConfig
-@SpringBootTest(classes = Object.class)
-@Import(ServiceTestConfig.class)
-@ActiveProfiles("service-test")
+@SpringBootTest
 class PostServiceTest {
     private final Long id = 1L;
     private final String title = "Some title";
@@ -42,16 +35,11 @@ class PostServiceTest {
     private final PostUpdateDto updateDto = new PostUpdateDto(id, title, text,tags);
     private final PostResponseDto dto = new PostResponseDto(id, title, text, tags, 3, 4);
 
-    @Autowired
+    @MockitoBean
     private PostRepository repository;
 
     @Autowired
     private PostService service;
-
-    @BeforeEach
-    void setUp() {
-        reset(repository);
-    }
 
     @Test
     void testSearchParsing() {
