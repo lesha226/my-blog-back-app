@@ -7,6 +7,7 @@ import java.util.Arrays;
 
 @Component
 public class CorsProperties {
+    private final boolean enabled;
     private final String[] allowedOrigins;
     private final String[] allowedMethods;
     private final String[] allowedHeaders;
@@ -14,17 +15,23 @@ public class CorsProperties {
     private final long maxAge;
 
     public CorsProperties(Environment environment) {
+        boolean defaultEnabled = false;
         String defaultAllowedOrigins = "http://localhost";
         String defaultAllowedMethods = "GET,POST,PUT,DELETE,OPTIONS,HEAD";
         String defaultAllowedHeaders = "*";
         Boolean defaultAllowCredentials = false;
         Long defaultMaxAge = -1L;
 
+        enabled = environment.getProperty("app.cors.enabled", Boolean.class, defaultEnabled);
         allowedOrigins = environment.getProperty( "app.cors.allowed-origins", defaultAllowedOrigins).split(",");
         allowedMethods = environment.getProperty("app.cors.allowed-methods", defaultAllowedMethods).split(",");
         allowedHeaders = environment.getProperty("app.cors.allowed-headers", defaultAllowedHeaders).split(",");
         allowCredentials = environment.getProperty("app.cors.allow-credentials", Boolean.class, defaultAllowCredentials);
         maxAge = environment.getProperty("app.cors.max-age", Long.class, defaultMaxAge);
+    }
+
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public String[] getAllowedOrigins() {
@@ -50,7 +57,8 @@ public class CorsProperties {
     @Override
     public String toString() {
         return "CorsProperties{" +
-                "allowedOrigins=" + Arrays.toString(allowedOrigins) +
+                "enabled=" + enabled +
+                ", allowedOrigins=" + Arrays.toString(allowedOrigins) +
                 ", allowedMethods=" + Arrays.toString(allowedMethods) +
                 ", allowedHeaders=" + Arrays.toString(allowedHeaders) +
                 ", allowCredentials=" + allowCredentials +

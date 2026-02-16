@@ -5,7 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
 import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
 import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
@@ -23,7 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-@SpringJUnitConfig(classes = ServiceTestConfig.class)
+// TODO : use @MockitoBean
+//тестирование в изолированном контексте ServiceTestConfig
+@SpringBootTest(classes = Object.class)
+@Import(ServiceTestConfig.class)
+@ActiveProfiles("service-test")
 class PostServiceTest {
     private final Long id = 1L;
     private final String title = "Some title";

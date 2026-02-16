@@ -1,11 +1,15 @@
 package ru.yandex.practicum.lesha226.blog.service.utils;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
 class SearchStringParserTest {
 
     @Test
