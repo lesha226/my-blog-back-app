@@ -13,7 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {ImageService.class})
 class ImageServiceTest {
     private final Long postId = 1L;
     private final byte[] body = {1, 2, 3};

@@ -13,6 +13,7 @@ import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.dto.PageDto;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
+import ru.yandex.practicum.lesha226.blog.service.mapper.PostMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-@SpringBootTest
+@SpringBootTest(classes = {PostService.class, PostMapperImpl.class})
 class PostServiceTest {
     private final Long id = 1L;
     private final String title = "Some title";

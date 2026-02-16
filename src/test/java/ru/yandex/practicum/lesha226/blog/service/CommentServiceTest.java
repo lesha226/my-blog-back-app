@@ -10,6 +10,7 @@ import ru.yandex.practicum.lesha226.blog.dto.CommentUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
+import ru.yandex.practicum.lesha226.blog.service.mapper.CommentMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@SpringBootTest(classes = {CommentService.class, CommentMapperImpl.class})
 class CommentServiceTest {
     private final Long id = 1L;
     private final Long postId = 100L;
