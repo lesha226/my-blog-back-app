@@ -28,8 +28,11 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PageDto getPostPage(String search, int pageNumber, int pageSize) {
-        SearchStringParser parser = new SearchStringParser(search);
+        if (pageNumber < 1  || pageSize < 1) {
+            throw new IllegalArgumentException();
+        }
 
+        SearchStringParser parser = new SearchStringParser(search);
         int offset = (pageNumber - 1) * pageSize;
 
         List<Post> postList = repository.findAll(parser.getTitle(), parser.getTagList(), offset, pageSize);
@@ -76,7 +79,6 @@ public class PostService {
             throw new PostNotFoundException(id);
         };
     }
-
 
     public int like(Long id) throws PostNotFoundException {
         repository.like(id);

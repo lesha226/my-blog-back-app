@@ -1,56 +1,84 @@
 package ru.yandex.practicum.lesha226.blog.configuration.property;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
 @Component
+@ConfigurationProperties(prefix = "app.cors")
 public class CorsProperties {
-    private final String[] allowedOrigins;
-    private final String[] allowedMethods;
-    private final String[] allowedHeaders;
-    private final boolean allowCredentials;
-    private final long maxAge;
+    private boolean enabled = false;
+    private String[] mapping = {"/**"};
+    private String[] allowedOrigins = {"http://localhost"};
+    private String[] allowedMethods = "GET,POST,PUT,DELETE,OPTIONS,HEAD".split(",");
+    private String[] allowedHeaders = {"*"};
+    private boolean allowCredentials = false;
+    private long maxAge = -1;
 
-    public CorsProperties(Environment environment) {
-        String defaultAllowedOrigins = "http://localhost";
-        String defaultAllowedMethods = "GET,POST,PUT,DELETE,OPTIONS,HEAD";
-        String defaultAllowedHeaders = "*";
-        Boolean defaultAllowCredentials = false;
-        Long defaultMaxAge = -1L;
+    public boolean isEnabled() {
+        return enabled;
+    }
 
-        allowedOrigins = environment.getProperty( "app.cors.allowed-origins", defaultAllowedOrigins).split(",");
-        allowedMethods = environment.getProperty("app.cors.allowed-methods", defaultAllowedMethods).split(",");
-        allowedHeaders = environment.getProperty("app.cors.allowed-headers", defaultAllowedHeaders).split(",");
-        allowCredentials = environment.getProperty("app.cors.allow-credentials", Boolean.class, defaultAllowCredentials);
-        maxAge = environment.getProperty("app.cors.max-age", Long.class, defaultMaxAge);
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public String[] getMapping() {
+        return mapping;
+    }
+
+    public void setMapping(String[] mapping) {
+        this.mapping = mapping;
     }
 
     public String[] getAllowedOrigins() {
         return allowedOrigins;
     }
 
+    public void setAllowedOrigins(String[] allowedOrigins) {
+        this.allowedOrigins = allowedOrigins;
+    }
+
     public String[] getAllowedMethods() {
         return allowedMethods;
+    }
+
+    public void setAllowedMethods(String[] allowedMethods) {
+        this.allowedMethods = allowedMethods;
     }
 
     public String[] getAllowedHeaders() {
         return allowedHeaders;
     }
 
+    public void setAllowedHeaders(String[] allowedHeaders) {
+        this.allowedHeaders = allowedHeaders;
+    }
+
     public boolean isAllowCredentials() {
         return allowCredentials;
+    }
+
+    public void setAllowCredentials(boolean allowCredentials) {
+        this.allowCredentials = allowCredentials;
     }
 
     public long getMaxAge() {
         return maxAge;
     }
 
+    public void setMaxAge(long maxAge) {
+        this.maxAge = maxAge;
+    }
+
     @Override
     public String toString() {
         return "CorsProperties{" +
-                "allowedOrigins=" + Arrays.toString(allowedOrigins) +
+                "enabled=" + enabled +
+                ", mapping=" + Arrays.toString(mapping) +
+                ", allowedOrigins=" + Arrays.toString(allowedOrigins) +
                 ", allowedMethods=" + Arrays.toString(allowedMethods) +
                 ", allowedHeaders=" + Arrays.toString(allowedHeaders) +
                 ", allowCredentials=" + allowCredentials +

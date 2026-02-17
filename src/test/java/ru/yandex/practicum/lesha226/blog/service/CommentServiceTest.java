@@ -1,16 +1,16 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.practicum.lesha226.blog.dto.CommentResponseDto;
 import ru.yandex.practicum.lesha226.blog.dto.CommentCreateDto;
 import ru.yandex.practicum.lesha226.blog.dto.CommentUpdateDto;
 import ru.yandex.practicum.lesha226.blog.exception.CommentNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.repository.CommentRepository;
+import ru.yandex.practicum.lesha226.blog.service.mapper.CommentMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = ServiceTestConfig.class)
+@SpringBootTest(classes = {CommentService.class, CommentMapperImpl.class})
 class CommentServiceTest {
     private final Long id = 1L;
     private final Long postId = 100L;
@@ -29,16 +29,11 @@ class CommentServiceTest {
     private final Comment newComment = new Comment(null, postId, tempText);
     private final Comment resultComment = new Comment(id, postId, tempText);
 
-    @Autowired
+    @MockitoBean
     private CommentRepository repository;
 
     @Autowired
     private CommentService service;
-
-    @BeforeEach
-    void setUp() {
-        reset(repository);
-    }
 
     @Test
     void findAll() {

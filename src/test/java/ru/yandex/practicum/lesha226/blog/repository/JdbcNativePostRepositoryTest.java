@@ -3,10 +3,9 @@ package ru.yandex.practicum.lesha226.blog.repository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.data.jdbc.test.autoconfigure.DataJdbcTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.lesha226.blog.config.RepositoryTestConfig;
 import ru.yandex.practicum.lesha226.blog.model.Comment;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 
@@ -15,9 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-
-@SpringJUnitConfig(classes = RepositoryTestConfig.class)
-@TestPropertySource(locations = "classpath:test-application.properties")
+@DataJdbcTest
+@ComponentScan("ru.yandex.practicum.lesha226.blog.repository")
 class JdbcNativePostRepositoryTest {
 
     @Autowired

@@ -1,12 +1,11 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.practicum.lesha226.blog.dto.PostCreateDto;
 import ru.yandex.practicum.lesha226.blog.dto.PostResponseDto;
 import ru.yandex.practicum.lesha226.blog.dto.PostUpdateDto;
@@ -14,6 +13,7 @@ import ru.yandex.practicum.lesha226.blog.exception.PostNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Post;
 import ru.yandex.practicum.lesha226.blog.dto.PageDto;
 import ru.yandex.practicum.lesha226.blog.repository.PostRepository;
+import ru.yandex.practicum.lesha226.blog.service.mapper.PostMapperImpl;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 
-@SpringJUnitConfig(classes = ServiceTestConfig.class)
+@SpringBootTest(classes = {PostService.class, PostMapperImpl.class})
 class PostServiceTest {
     private final Long id = 1L;
     private final String title = "Some title";
@@ -36,16 +36,11 @@ class PostServiceTest {
     private final PostUpdateDto updateDto = new PostUpdateDto(id, title, text,tags);
     private final PostResponseDto dto = new PostResponseDto(id, title, text, tags, 3, 4);
 
-    @Autowired
+    @MockitoBean
     private PostRepository repository;
 
     @Autowired
     private PostService service;
-
-    @BeforeEach
-    void setUp() {
-        reset(repository);
-    }
 
     @Test
     void testSearchParsing() {

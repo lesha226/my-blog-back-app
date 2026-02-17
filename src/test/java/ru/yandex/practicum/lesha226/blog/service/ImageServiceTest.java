@@ -1,10 +1,9 @@
 package ru.yandex.practicum.lesha226.blog.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
-import ru.yandex.practicum.lesha226.blog.config.ServiceTestConfig;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import ru.yandex.practicum.lesha226.blog.exception.ImageNotFoundException;
 import ru.yandex.practicum.lesha226.blog.model.Image;
 import ru.yandex.practicum.lesha226.blog.repository.ImageRepository;
@@ -14,22 +13,17 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringJUnitConfig(classes = ServiceTestConfig.class)
+@SpringBootTest(classes = {ImageService.class})
 class ImageServiceTest {
     private final Long postId = 1L;
     private final byte[] body = {1, 2, 3};
     private final Image image = new Image(1L, body);
 
-    @Autowired
+    @MockitoBean
     private ImageRepository repository;
 
     @Autowired
     private ImageService service;
-
-    @BeforeEach
-    void setUp() {
-        reset(repository);
-    }
 
     @Test
     void testFindByPostId() throws ImageNotFoundException {
