@@ -7,7 +7,6 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import ru.yandex.practicum.lesha226.blog.configuration.property.CorsProperties;
 
-// TODO : delete this class?
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
